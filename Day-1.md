@@ -1607,7 +1607,549 @@ else:
 
 ---
 
-## 八、文件 I/O 与 pathlib
+## 八、面向对象（OOP）基础
+
+### 1. 是什么
+
+面向对象编程（OOP）是一种将数据和操作数据的方法组织成"对象"，每个对象包含数据（属性）和方法（行为）。
+
+Python 的 OOP 比大多数语言更灵活——它支持多重继承、方法重写、鸭子类型，以及一切皆对象的哲学。
+
+**基础语法速览：**
+
+```python
+class Dog:
+    species = "Canis familiaris"  # 类属性（所有实例共享）
+
+    def __init__(self, name, age):
+        self.name = name  # 实例属性
+        self.age = age
+
+    def bark(self):
+        return f"{self.name} says woof!"
+
+    def __str__(self):
+        return f"{self.name} ({self.age}yo)"
+
+
+buddy = Dog("Buddy", 3)
+print(buddy.bark())      # "Buddy says woof!"
+print(buddy.species)     # "Canis familiaris"
+print(buddy)             # "Buddy (3yo)"
+```
+
+关键点：
+- `self` 是实例本身的引用（类似其他语言的 `this`），**必须作为第一个参数**
+- `__init__` 是构造方法（初始化实例），不是构造函数（对象已经创建了再初始化）
+- `__str__` 是魔术方法，控制 `print(obj)` 的输出
+- 实例方法、类方法、静态方法有不同的第一个参数约定
+
+### 2. 解决了什么问题
+
+**问题 1：数据和操作分离**
+
+没有 OOP 时，操作数据的函数和数据是分开的：
+
+```python
+# 函数式风格
+def create_dog(name, age):
+    return {"name": name, "age": age}
+
+def bark(dog):
+    return f"{dog['name']} says woof!"
+
+def celebrate_birthday(dog):
+    dog['age'] += 1
+```
+
+每增加一个操作，就要加一个新函数。谁创建了数据谁负责操作——没有自然的分组。
+
+OOP 把数据和操作封装在一起——"狗的年龄增加"不再是外部函数的职责，而是 Dog 自己的方法。
+
+**问题 2：代码复用**
+
+直接复制粘贴来修改功能会导致大量重复代码。OOP 的继承允许你在一个地方修改，所有子类自动获得。
+
+**问题 3：现实世界建模**
+
+OOP 的"对象"和现实世界的"事物"有自然对应关系：用户、订单、商品、请求……这让代码结构更容易理解。
+
+### 3. 核心理论
+
+#### 3.1 类属性 vs 实例属性
+
+```python
+class Employee:
+    # 类属性——所有实例共享
+    company = "Acme Inc"
+    raise_rate = 1.05
+
+    def __init__(self, name, salary):
+        # 实例属性——每个实例独有
+        self.name = name
+        self.salary = salary
+
+    def apply_raise(self):
+        self.salary = int(self.salary * self.raise_rate)
+
+
+e1 = Employee("Alice", 50000)
+e2 = Employee("Bob", 60000)
+
+print(e1.company)  # "Acme Inc"
+print(e2.company)  # "Acme Inc"
+
+# 修改类属性影响所有实例
+Employee.raise_rate = 1.10
+e1.apply_raise()
+print(e1.salary)  # 55000
+
+# 修改实例属性不影响类
+Employee.company = "New Corp"
+print(e1.company)  # "New Corp"
+print(e2.company)  # "New Corp"
+
+# 但给实例设置同名属性会屏蔽类属性
+e1.company = "Private Co"
+print(e1.company)  # "Private Co"  — 实例属性覆盖
+print(e2.company)  # "New Corp"    — 还是类属性
+```
+
+**属性查找顺序：** 实例属性 → 类属性 → 父类（MRO 顺序）
+
+#### 3.2 实例方法、类方法、静态方法
+
+```python
+class Date:
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month
+        self.day = day
+
+    # 实例方法——需要访问实例
+    def format(self):
+        return f"{self.year}-{self.month:02d}-{self.day:02d}"
+
+    # 类方法——需要访问类（第一个参数是 cls，不是 self）
+    @classmethod
+    def from_string(cls, date_str):
+        """替代构造器：由字符串创建实例"""
+        year, month, day = map(int, date_str.split("-"))
+        return cls(year, month, day)
+
+    # 静态方法——不需要访问类或实例（就是个普通函数放在类里）
+    @staticmethod
+    def is_valid(date_str):
+        """验证日期字符串格式"""
+        try:
+            parts = date_str.split("-")
+            return len(parts) == 3
+        except Exception:
+            return False
+
+
+# 实例方法：通过实例调用
+d = Date(2026, 5, 23)
+print(d.format())  # "2026-05-23"
+
+# 类方法：通过类或实例调用
+d2 = Date.from_string("2026-06-01")
+print(d2.format())  # "2026-06-01"
+
+# 静态方法：通过类或实例调用
+print(Date.is_valid("2026-05-23"))  # True
+```
+
+| 方法类型 | 第一个参数 | 能访问实例 | 能访问类 | 什么时候用 |
+|---------|-----------|-----------|---------|-----------|
+| 实例方法 | `self` | ✅ | ✅ | 绝大多数方法 |
+| 类方法 | `cls` | ❌ | ✅ | 工厂方法、替代构造器 |
+| 静态方法 | 无 | ❌ | ❌ | 工具函数，语义上属于这个类 |
+
+#### 3.3 继承
+
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        raise NotImplementedError("Subclasses must implement")
+
+    def __str__(self):
+        return f"Animal: {self.name}"
+
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} says Woof!"
+
+    def fetch(self):
+        return f"{self.name} fetches the ball"
+
+
+class Cat(Animal):
+    def __init__(self, name, lives=9):
+        super().__init__(name)  # 调用父类构造
+        self.lives = lives
+
+    def speak(self):
+        return f"{self.name} says Meow!"
+
+    def __str__(self):
+        return f"Cat: {self.name} ({self.lives} lives left)"
+
+
+class RobotDog(Dog):
+    """多重继承层次——覆盖和不覆盖"""
+    def speak(self):
+        return f"{self.name} says Beep beep!"
+
+
+animals = [Dog("Buddy"), Cat("Whiskers"), RobotDog("R2D2")]
+for a in animals:
+    print(a.speak())  # 多态：不同类，同一接口
+# Buddy says Woof!
+# Whiskers says Meow!
+# R2D2 says Beep beep!
+
+print(isinstance(animals[0], Animal))  # True
+print(isinstance(animals[2], Dog))     # True（继承链）
+print(issubclass(RobotDog, Animal))    # True
+```
+
+**super() 的作用：** 调用父类方法。在 `__init__` 中调用 `super().__init__()` 是最常见的模式——确保父类的初始化逻辑被执行。
+
+#### 3.4 魔术方法（Magic Methods / Dunder Methods）
+
+Python 的类可以通过实现特定名称的方法来参与语言的内建操作：
+
+```python
+class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __repr__(self):
+        """开发者看到的表示"""
+        return f"Vector({self.x}, {self.y})"
+
+    def __str__(self):
+        """用户看到的表示"""
+        return f"({self.x}, {self.y})"
+
+    def __add__(self, other):
+        """支持 + 运算符"""
+        return Vector(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        """支持 - 运算符"""
+        return Vector(self.x - other.x, self.y - other.y)
+
+    def __eq__(self, other):
+        """支持 == 比较"""
+        return self.x == other.x and self.y == other.y
+
+    def __abs__(self):
+        """支持 abs()"""
+        return (self.x**2 + self.y**2) ** 0.5
+
+    def __bool__(self):
+        """支持布尔判断"""
+        return self.x != 0 or self.y != 0
+
+
+v1 = Vector(3, 4)
+v2 = Vector(1, 2)
+
+print(v1)                   # (3, 4)  ← __str__
+print(repr(v1))              # Vector(3, 4)  ← __repr__
+print(v1 + v2)               # (4, 6)  ← __add__
+print(v1 - v2)               # (2, 2)  ← __sub__
+print(v1 == Vector(3, 4))    # True   ← __eq__
+print(abs(v1))               # 5.0    ← __abs__
+print(bool(Vector(0, 0)))    # False  ← __bool__
+```
+
+**常用魔术方法速查：**
+
+| 类别 | 方法 | 触发时机 |
+|------|------|---------|
+| 构造 | `__init__`, `__new__` | 创建对象 |
+| 字符串 | `__str__`, `__repr__`, `__format__` | print, str, f-string |
+| 算术 | `__add__`, `__sub__`, `__mul__`, `__truediv__` | +, -, *, / |
+| 比较 | `__eq__`, `__lt__`, `__gt__`, `__le__`, `__ge__` | ==, <, >, <=, >= |
+| 容器 | `__len__`, `__getitem__`, `__setitem__`, `__contains__` | len, [], in |
+| 迭代 | `__iter__`, `__next__` | for 循环 |
+| 可调用 | `__call__` | obj() |
+| 上下文 | `__enter__`, `__exit__` | with 语句 |
+
+#### 3.5 property — 控制属性访问
+
+```python
+class Temperature:
+    def __init__(self, celsius=0):
+        self._celsius = celsius  # 约定：_ 前缀表示"内部使用"
+
+    @property
+    def celsius(self):
+        """只读属性（但没有 setter 就无法赋值）"""
+        return self._celsius
+
+    @celsius.setter
+    def celsius(self, value):
+        """setter：赋值时做校验"""
+        if value < -273.15:
+            raise ValueError("Temperature below absolute zero!")
+        self._celsius = value
+
+    @property
+    def fahrenheit(self):
+        """计算属性（只读）"""
+        return self._celsius * 9 / 5 + 32
+
+    @fahrenheit.setter
+    def fahrenheit(self, value):
+        self._celsius = (value - 32) * 5 / 9
+
+
+# 使用
+t = Temperature(25)
+print(t.celsius)                    # 25
+t.celsius = 30                      # ✅ 调用 setter
+print(t.fahrenheit)                 # 86.0
+# t.celsius = -300                   # ❌ ValueError
+t.fahrenheit = 100                  # ✅ 设置 fahrenheit 连带着改 celsius
+print(t.celsius)                    # 37.78
+```
+
+**property 的价值：** 让你先写简单的属性访问，后续再添加校验/计算逻辑而不改变调用方的代码。
+
+### 4. 场景
+
+#### 场景 1：数据验证类
+
+```python
+class User:
+    """带验证的用户类"""
+    def __init__(self, username, email, age=None):
+        self.username = username   # 触发 setter
+        self.email = email
+        self.age = age
+
+    @property
+    def username(self):
+        return self._username
+
+    @username.setter
+    def username(self, value):
+        if not isinstance(value, str) or len(value) < 3:
+            raise ValueError("Username must be at least 3 characters")
+        if not value.isalnum():
+            raise ValueError("Username must be alphanumeric")
+        self._username = value
+
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self, value):
+        if "@" not in value:
+            raise ValueError("Invalid email address")
+        self._email = value
+
+    @property
+    def age(self):
+        return self._age
+
+    @age.setter
+    def age(self, value):
+        if value is not None and (value < 0 or value > 150):
+            raise ValueError("Age must be between 0 and 150")
+        self._age = value
+
+
+# 使用
+u = User("Leo", "leo@example.com", 30)  # ✅
+# u2 = User("L", "leo@.com")              # ❌ ValueError
+```
+
+#### 场景 2：链式 API（类似 pandas 风格）
+
+```python
+class Query:
+    def __init__(self, data):
+        self._data = list(data)
+
+    def filter(self, predicate):
+        self._data = [x for x in self._data if predicate(x)]
+        return self  # 返回 self 实现链式调用
+
+    def map(self, func):
+        self._data = [func(x) for x in self._data]
+        return self
+
+    def sort(self, key=None, reverse=False):
+        self._data = sorted(self._data, key=key, reverse=reverse)
+        return self
+
+    def limit(self, n):
+        self._data = self._data[:n]
+        return self
+
+    def to_list(self):
+        return self._data
+
+
+# 链式使用
+result = (
+    Query([1, 2, 3, 4, 5, 6])
+    .filter(lambda x: x > 2)
+    .map(lambda x: x ** 2)
+    .sort(reverse=True)
+    .limit(2)
+    .to_list()
+)
+print(result)  # [36, 25]
+```
+
+### 5. 替代方案对比
+
+| 场景 | OOP | 替代方案 |
+|------|-----|---------|
+| 简单数据容器 | class + __init__ | dataclass / namedtuple |
+| 带验证的属性 | @property | 手动 getter/setter |
+| 单方法行为 | class + 方法 | 闭包（closure） |
+| 多种类型行为 | 继承 + 多态 | singledispatch |
+| 简单命名元组 | namedtuple / dataclass | class 太啰嗦 |
+
+**什么时候用 class，什么时候不用：**
+- 有内部状态需要维护 → class
+- 只有行为没有状态 → 用函数
+- 只有数据没有行为 → 用 dataclass / namedtuple
+- 需要多种实现的同一接口 → 用 ABC / Protocol
+
+### 6. 常见坑
+
+```python
+# 坑 1: 可变默认值（跟函数一样的问题！）
+class Bad:
+    def __init__(self, items=[]):  # ❌ 所有实例共享同一个列表
+        self.items = items
+
+a = Bad()
+b = Bad()
+a.items.append(1)
+print(b.items)  # [1] — 被 a 污染了
+
+class Good:
+    def __init__(self, items=None):
+        self.items = items if items is not None else []
+
+# 坑 2: 双下划线属性不是私有——是名称修饰
+class Secret:
+    def __init__(self):
+        self.__secret = 42
+
+s = Secret()
+# print(s.__secret)     # ❌ AttributeError
+print(s._Secret__secret)  # 42 — 仍然能访问！
+# Python 没有真正的私有属性，__ 只是避免子类意外覆盖
+# 单下划线 _ 是约定——"这是内部实现，不要碰"
+
+# 坑 3: 继承时忘记调用 super().__init__()
+class Parent:
+    def __init__(self):
+        self.initialized = True
+
+class Child(Parent):
+    def __init__(self):
+        pass  # 忘记调用 super().__init__()
+
+c = Child()
+# print(c.initialized)  # ❌ AttributeError — Parent.__init__ 没执行
+
+# 坑 4: @staticmethod 和 @classmethod 的误用
+# 如果方法里用到了 self，永远不要用 @staticmethod
+class MathUtils:
+    @staticmethod
+    def add(a, b):  # ✅ 不需要访问类或实例——纯工具
+        return a + b
+
+    @classmethod
+    def from_polar(cls, r, theta):  # ✅ 需要返回 cls 实例
+        return cls(r * cos(theta), r * sin(theta))
+
+# 坑 5: 多重继承的 MRO（方法解析顺序）
+class A:
+    def method(self):
+        return "A"
+
+class B(A):
+    def method(self):
+        return "B"
+
+class C(A):
+    def method(self):
+        return "C"
+
+class D(B, C):
+    pass
+
+d = D()
+print(d.method())  # "B" — C3 线性化算法决定
+print(D.__mro__)   # D → B → C → A → object
+```
+
+### 7. 代码验证
+
+```python
+# 验证 isinstance 和 type 的区别
+class Parent:
+    pass
+
+class Child(Parent):
+    pass
+
+c = Child()
+
+print(type(c) is Child)    # True
+print(type(c) is Parent)   # False — type 精确匹配
+
+print(isinstance(c, Child))   # True
+print(isinstance(c, Parent))  # True — isinstance 走继承链
+```
+
+```python
+# 验证 property 的延迟计算
+class Lazy:
+    @property
+    def expensive(self):
+        """每次访问都重新计算"""
+        import time
+        time.sleep(1)
+        print("Computing...")
+        return 42
+
+    @cached_property
+    def cached(self):
+        """只计算一次，之后缓存"""
+        import time
+        time.sleep(1)
+        print("Caching...")
+        return 99
+
+
+from functools import cached_property
+l = Lazy()
+print(l.cached)  # 第一次：计算
+print(l.cached)  # 第二次：直接返回缓存值
+```
+
+---
+
+## 九、文件 I/O 与 pathlib
 
 ### 1. 是什么
 
@@ -1823,7 +2365,7 @@ print(p.exists())  # False — 这次才真的检查磁盘
 
 ---
 
-## 九、模块与 import
+## 十、模块与 import
 
 ### 1. 是什么
 
@@ -1967,6 +2509,7 @@ print(f"__name__ = {__name__}")  # 直接运行 → "__main__"
 | **容器** | list 最常用、set 去重、dict 关联 | 选择正确的容器 |
 | **控制流** | for-else 替代哨兵、:= 消除重复、match 替代 if-elif | 少写样板代码 |
 | **函数** | 参数系统灵活、默认值陷阱要避开 | API 设计的核心 |
+| **OOP** | class 封装数据和行为、property 控制访问 | 数据和操作在一起 |
 | **异常** | EAFP、异常链保留上下文 | 生产级错误处理 |
 | **文件 I/O** | 用 with、用 pathlib | 更安全更现代 |
 | **模块** | `__name__ == "__main__"` 区分入口和库 | 代码组织的基础 |
