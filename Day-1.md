@@ -1,14 +1,16 @@
-# 🐍 Python Bootcamp — Day 1
-## 语言基础速通（针对有编程经验者）
-*2026-05-21*
+# Day 1 — 语言基础速通（完整版）
 
-> 你有多年编程经验且接触过 Python，Day 1 不讲"变量是什么"。直接按 Python 和其他语言差异最大的点来，快速建立完整的 Python 心智模型。
+---
+
+> 你有多年编程经验且接触过 Python，不讲"变量是什么"。直接按 Python 和其他语言差异最大的点来，快速建立完整的 Python 心智模型。
 
 ---
 
 ## 一、Python 的"哲学"——先理解为什么
 
-打开 Python 终端执行 `import this`，会看到 Tim Peters 写的《Python 之禅》：
+### 1. 是什么
+
+打开 Python 终端执行 `import this`，会看到 Tim Peters 写的《Python 之禅》——这是 Python 语言设计的核心指导思想。
 
 ```
 Beautiful is better than ugly.
@@ -18,7 +20,11 @@ Complex is better than complicated.
 Readability counts.
 ```
 
-这不仅仅是鸡汤——它直接影响 API 设计。对比一下：
+### 2. 解决了什么问题
+
+Python 的哲学解决了一个元问题：**当语言设计遇到选择时，该往哪个方向走？**
+
+对比一下：
 
 ```python
 # 不 Pythonic（像 Java 翻译过来）
@@ -35,62 +41,57 @@ def calculate(a, b, c):
     return sum([a, b, c])
 ```
 
-**Python 的核心理念：** 代码首先是给人读的，其次才是给机器执行的。
+Python 的哲学选择"显式优于隐式"、"可读性优先"。这意味着：
+- API 设计通常用清晰的名称，而不是缩写
+- 没有花括号——缩进本身就是代码块
+- 不搞隐式类型转换——宁可报错也不猜
 
----
+### 3. 核心理论
 
-## 二、核心概念速览
+Python 的三个核心设计决策贯穿了所有语法：
 
-### 1. 动态强类型
-
-与 Java 的静态类型和 JavaScript 的弱类型都不同，Python 是**动态强类型**：
+**决策 1：动态强类型**
 
 ```python
 # 动态：变量不需要声明类型
-x = 42          # int
-x = "hello"     # 现在变成 str（合法）
+x = 42
+x = "hello"  # 合法
 
 # 强：不会隐式类型转换
-"answer: " + 42     # ❌ TypeError: can only concatenate str (not "int") to str
-"answer: " + str(42)  # ✅ 要显式转
-
-# 跟 JS 对比（弱类型）
-# "5" + 3  = "53"
-# "5" - 3  = 2
-# Python 不会做这种事
+"answer: " + 42     # ❌ TypeError
+"answer: " + str(42)  # ✅
 ```
 
-### 2. 缩进即块结构
+跟 JS（弱类型）对比：
+```javascript
+"5" + 3  = "53"    // JS 自动转
+"5" - 3  = 2       // JS 自动转
+```
+Python 不会做这种事。
 
-Python 没有 `{}`，用缩进定义代码块：
+**决策 2：缩进即块结构**
 
 ```python
-# 一致的缩进 = 正确的代码
 for i in range(3):
     if i % 2 == 0:
-        print(f"{i} is even")  # 这行属于 if
+        print(f"{i} is even")
     else:
-        print(f"{i} is odd")   # 这行属于 else
-print("done")  # 这行在 for 外面
+        print(f"{i} is odd")
+print("done")  # 在 for 外面
 ```
 
-**标准约定：** 4 个空格，永远不要用 Tab 混着空格。大部分编辑器会自动把 Tab 转成空格。
+标准约定：**4 个空格**，永远不要混用 Tab。
 
-### 3. 一切皆对象
-
-在 Python 中，函数、类、甚至类型本身都是对象：
+**决策 3：一切皆对象**
 
 ```python
 def hello():
     return "hello"
 
-hello.custom_attr = 42  # ✅ 函数可以动态加属性
+hello.custom_attr = 42  # 函数可以动态加属性
 print(hello.__name__)   # "hello"
 
-# 函数可以传给变量、作为参数、作为返回值
-f = hello               # 赋值
-print(f())              # "hello"
-
+# 函数可以传给变量、作为返回值
 def call_twice(func):
     return func() + func()
 
@@ -101,28 +102,61 @@ print(call_twice(hello))  # "hellohello"
 
 ---
 
-## 三、数据类型详解
+## 二、核心数据类型
 
-### int — 任意精度整数
+### 1. 是什么
+
+Python 的内置数据类型比大多数语言丰富，而且每个都有独特的设计。
+
+| 类型 | 可否变 | 可哈希 | 一句话 |
+|------|-------|-------|-------|
+| `int` | — | ✅ | 任意精度，不会溢出 |
+| `float` | — | ✅ | 底层 C double，有精度问题 |
+| `complex` | — | ✅ | 原生复数 |
+| `bool` | — | ✅ | int 子类，True=1 |
+| `str` | ❌ | ✅ | Unicode，不可变 |
+| `list` | ✅ | ❌ | 最常用容器 |
+| `tuple` | ❌ | ✅ | 不可变列表 |
+| `set` | ✅ | ❌ | 无序不重复 |
+| `dict` | ✅ | ❌ | 关联数组 |
+| `NoneType` | — | — | 有且只有 None |
+
+### 2. 解决了什么问题
+
+每个类型解决了一个具体的痛点：
+
+- **int 任意精度** — 不用再考虑整数溢出（其他语言的老大难）
+- **bool 是 int 子类** — 可以直接做数学运算，隐式布尔转换让条件判断优雅
+- **tuple 可哈希** — 可以作为字典键（list 不行）
+- **set O(1) 查找** — 比 list 快得多
+
+### 3. 核心理论
+
+#### int — 任意精度整数
 
 ```python
-# 不会溢出，可以算到内存不够为止
-a = 2 ** 1000
+# 不会溢出
+a = 2 ** 1000  # 300+ 位的大整数
 print(a)
-# 10715086071862673209484250490600018105614048117055336074437503883703510511249361224931983788156958581275946729175531468251871452856923140435984577574698574803934567774824230985421074605062371141877954182153046474983581941267398767559165543946077062914571196477686542167660429831652624386837205668069376
 
-# 进制
+# 进制直接量
 print(0b1010)    # 10（二进制）
 print(0o12)      # 10（八进制）
 print(0xA)       # 10（十六进制）
 print(bin(10))   # "0b1010"
 print(hex(10))   # "0xa"
+
+# 大整数运算
+factorial_100 = 1
+for i in range(1, 101):
+    factorial_100 *= i
+print(factorial_100)  # 158 位数字——其他语言早就溢出了
 ```
 
-### float — 底层是 C double
+#### float — 底层是 C double
 
 ```python
-# 浮点精度问题（跟所有语言一样）
+# 浮点精度问题（跟所有语言一样，因为 IEEE 754）
 print(0.1 + 0.2)            # 0.30000000000000004
 print(0.1 + 0.2 == 0.3)     # False ❌
 
@@ -130,142 +164,385 @@ print(0.1 + 0.2 == 0.3)     # False ❌
 print(abs(0.1 + 0.2 - 0.3) < 1e-9)  # True
 print(round(0.1 + 0.2, 2) == 0.3)   # True
 
-# Decimal 精确小数
+# Decimal 精确小数（用于金融场景）
 from decimal import Decimal
 print(Decimal("0.1") + Decimal("0.2"))  # 0.3
+
+# 特殊值
+float("inf")    # 正无穷
+float("-inf")   # 负无穷
+float("nan")    # Not a Number
 ```
 
-### complex — 复数（很少语言原生支持）
+#### complex — 复数（很少语言原生支持）
 
 ```python
 c = 3 + 4j
-print(c.real)       # 3.0
-print(c.imag)       # 4.0
-print(abs(c))       # 5.0（模）
+print(c.real)        # 3.0
+print(c.imag)        # 4.0
+print(abs(c))        # 5.0（模 \(\sqrt{3^2+4^2}\)）
 print(c.conjugate()) # (3-4j)
 ```
 
-### bool — int 的子类
+#### bool — int 的子类
 
 ```python
 # True = 1, False = 0
 print(True + True)   # 2
 print(False * 10)    # 0
 
-# 隐式布尔转换（记这个列表，超常用）
-# 以下值被当作 False：
+# 关键：隐式布尔转换
+# 以下值在条件判断中当作 False：
 #   None, False, 0, 0.0, "", [], (), {}, set(), range(0)
-if []:      # 不会执行
-    print("never")
-if [1]:     # 会执行
-    print("always")
+# 其他值都是 True
 
 # 所以不用写：
 if len(items) > 0:
 # 直接写：
-if items:
+if items:       # ✅ 更 Pythonic
+    process(items)
+
+# 也不要写：
+if len(items) == 0:
+    print("empty")
+# 直接写：
+if not items:
+    print("empty")
 ```
 
-### None — 空值（类似于 null/nil）
+#### None — 空值（类似 null/nil）
 
 ```python
 x = None
-print(x is None)  # True ✅（用 is 比较，不用 ==）
-print(x == None)  # 也可以但不推荐
+print(x is None)   # True ✅ 用 is 比较，不用 ==
+print(x == None)   # 也可以但不推荐
+
+# None 不是一个特殊值——它是一个单例对象
+# 所有 None 引用指向同一个对象
+y = None
+print(x is y)  # True
+```
+
+### 4. 场景
+
+#### 场景 1：隐式布尔转换在 API 设计中的影响
+
+```python
+# 一个函数返回列表——调用方如何判断"没有结果"？
+def search_users(query):
+    # 如果没找到，返回 [] 还是 None？
+    ...
+    return results
+
+# 如果返回 []：
+users = search_users("nonexistent")
+if users:           # [] → False
+    process(users)
+
+# 如果返回 None：
+users = search_users("nonexistent")
+if users is not None and users:  # 需要两层判断
+    process(users)
+
+# ✅ 最佳实践：函数返回一致的类型结构，让隐式布尔转换帮你
+def search_users(query):
+    if not query:
+        return []   # 返回空列表，而不是 None
+    return [user for user in all_users if query in user.name]
+```
+
+#### 场景 2：float 精度问题在比较中的陷阱
+
+```python
+# 写单元测试时容易踩的坑
+def test_addition():
+    assert 0.1 + 0.2 == 0.3  # ❌ 失败
+
+# ✅ 用 pytest.approx 或 math.isclose
+from math import isclose
+assert isclose(0.1 + 0.2, 0.3)  # ✅
+
+# 直接用 round
+assert round(0.1 + 0.2, 10) == round(0.3, 10)  # ✅
+```
+
+### 5. 替代方案对比
+
+| 类型 | Python | 其他语言 | 差异 |
+|------|--------|---------|------|
+| int | 任意精度 | 通常 32/64 位 | Python 不会溢出 |
+| float | double | double | 都一样有问题 |
+| bool | int 子类 | 独立类型 | True+True=2 |
+| null | None | null/nil/undefined | 单例，用 is 比较 |
+| decimal | Decimal | BigDecimal | 精度可配置 |
+
+### 6. 常见坑
+
+```python
+# 坑 1: is 和 == 混用
+a = 256
+b = 256
+print(a is b)  # True — 小整数缓存（-5~256）
+
+c = 257
+d = 257
+print(c is d)  # False! 超出缓存范围
+
+# ✅ 判断值用 ==，判断是不是同一个对象用 is
+# None 判断一定要用 is
+
+# 坑 2: 浮点的 NaN 不那么 NaN
+nan = float("nan")
+print(nan == nan)  # False！IEEE 754 规定 NaN ≠ NaN
+print(nan is nan)   # True（同一个对象）
+
+# 安全判断
+import math
+math.isnan(nan)  # True ✅
+
+# 坑 3: 空列表不等于 False
+print([] == False)   # False
+print(bool([]))      # False
+if not []:
+    print("empty")   # ✅ 正确
+
+# 坑 4: 十进制字符串 vs 数字
+# Decimal("0.1") 和 Decimal(0.1) 不一样！
+print(Decimal("0.1"))  # 0.1
+print(Decimal(0.1))    # 0.1000000000000000055511151231257827021181583404541015625
+```
+
+### 7. 代码验证
+
+```python
+# 验证 int 的任意精度
+# 计算 2^100000 最后 10 位
+result = pow(2, 100000)
+print(str(result)[-10:])  # 瞬间完成，不会溢出
+
+# 验证 None 是单例
+print(None is None)  # True
+print(id(None))      # 每次运行都一样
 ```
 
 ---
 
-## 四、字符串
+## 三、字符串（str）
 
-### f-string — Python 3.6 最实用的特性
+### 1. 是什么
+
+Python 的字符串是 Unicode 字符的不可变序列。它可以是单引号、双引号、三重引号包裹，功能上完全等价。
+
+### 2. 解决了什么问题
+
+- 程序要处理文本，而文本编码和多语言是最容易出错的地方
+- Python 3 的 str 原生存 Unicode，不再有 Python 2 的"str vs unicode"困惑
+- f-string 解决了字符串格式化一直以来的痛点：% 格式化可读性差，`.format()` 啰嗦
+
+### 3. 核心理论
+
+#### f-string — Python 3.6 最实用的特性
 
 ```python
 name = "Leo"
 age = 30
+pi = 3.1415926
 
-# 基础
+# 基础插值
 print(f"Name: {name}, Age: {age}")
 
-# 表达式
+# 任意表达式
 print(f"Next year: {age + 1}")
-
-# 格式化
-pi = 3.1415926
-print(f"Pi: {pi:.2f}")         # Pi: 3.14
-print(f"Pi: {pi:.4f}")         # Pi: 3.1416
-print(f"Pi: {pi:010.3f}")      # Pi: 000003.142
+print(f"Pi: {pi:.2f}")            # Pi: 3.14
+print(f"Pi: {pi:010.3f}")         # Pi: 000003.142
 
 # 对齐
-print(f"|{'left':<10}|")       # |left      |
-print(f"|{'right':>10}|")      # |     right|
-print(f"|{'center':^10}|")     # |  center  |
+print(f"|{'left':<10}|")          # |left      |
+print(f"|{'right':>10}|")         # |     right|
+print(f"|{'center':^10}|")        # |  center  |
 
 # 百分比
-print(f"Rate: {0.856:.1%}")    # Rate: 85.6%
+print(f"Rate: {0.856:.1%}")       # Rate: 85.6%
 
-# 逗号分隔（3.6+）
-print(f"{1234567:,}")          # 1,234,567
+# 逗号分隔
+print(f"{1234567:,}")             # 1,234,567
+
+# 日期格式化
+from datetime import datetime
+now = datetime.now()
+print(f"{now:%Y-%m-%d %H:%M}")    # 2026-05-23 11:00
+
+# 3.12+ 多行 f-string
+data = {"name": "Leo", "score": 95}
+print(
+    f"Name:  {data['name']}\n"
+    f"Score: {data['score']}"
+)
 ```
 
-### 字符串不可变
+#### 字符串不可变
 
 ```python
 s = "hello"
-# s[0] = "H"     # ❌ TypeError: 'str' object does not support item assignment
+# s[0] = "H"  # ❌ TypeError
 s = "H" + s[1:]  # ✅ 只能重新创建
+
+# 每次"修改"都创建新字符串
+s = "a"
+s = s + "b"  # 创建 "ab"（"a" 还在，但可能被 GC）
 ```
 
-### join 而不是 +=
+#### join 而不是 +=
 
 ```python
+words = ["hello", "world", "python"]
+
 # ❌ O(n²) — 每次 + 创建新字符串
 result = ""
 for s in words:
     result += s + ", "
 
 # ✅ O(n) — 一次性拼接
-result = ", ".join(words)
+result = ", ".join(words)  # "hello, world, python"
+
+# join 传入可迭代对象，比生成器还快
+result = "".join(f(x) for x in large_data)
 ```
 
-### 常用方法
+### 4. 场景
+
+#### 场景 1：大量字符串拼接的性能对比
 
 ```python
-text = "  Hello, World!  "
+import time
 
-# 修剪
-text.strip()       # "Hello, World!"
-text.lstrip()      # "Hello, World!  "
-text.rstrip()      # "  Hello, World!"
+n = 100000
+words = ["word"] * n
 
-# 分割与合并
-"a,b,c".split(",")      # ['a', 'b', 'c']
-"a\nb\nc".splitlines()  # ['a', 'b', 'c']
+# +=
+t0 = time.perf_counter()
+result = ""
+for w in words:
+    result += w
+print(f"+=: {time.perf_counter() - t0:.3f}s")
 
-# 查找
-text.find("World")     # 8（索引）
-text.find("Python")    # -1（没找到）
-"World" in text        # True（成员检查，最常用）
+# join
+t0 = time.perf_counter()
+result = "".join(words)
+print(f"join: {time.perf_counter() - t0:.3f}s")
 
-# 替换
-text.replace("World", "Python")
+# n = 100,000 时，join 快几十倍
+```
 
-# 判断
-"abc123".isalpha()     # False
-"abc".isalpha()        # True
-"123".isdigit()        # True
+#### 场景 2：路径/URL 拼接
 
-# 大小写
-"hello".upper()        # "HELLO"
-"HELLO".lower()        # "hello"
-"hello world".title()  # "Hello World"
+```python
+# 不要用字符串 +
+base_url = "https://api.example.com"
+endpoint = "/v2/users"
+url = base_url + endpoint  # 要小心斜杠
+
+# ✅ 用 pathlib 或 urllib.parse
+from urllib.parse import urljoin
+url = urljoin(base_url, endpoint)
+
+# 文件路径也一样
+from pathlib import Path
+data_dir = Path("data")
+log_file = data_dir / "logs" / "app.log"  # ✅ 更清晰的路径拼接
+```
+
+### 5. 替代方案对比
+
+| 方法 | 示例 | 什么时候用 |
+|------|------|-----------|
+| `+` | `"hello " + name` | 少量拼接 |
+| `join` | `", ".join(items)` | 列表/可迭代对象批量拼接 |
+| f-string | `f"Name: {name}"` | 绝大多数场景 |
+| `.format()` | `"Name: {}".format(name)` | 模板需要变量和模板分离时 |
+| `%` | `"Name: %s" % name` | 兼容旧代码或 logging |
+| `Template` | `Template("$name").substitute(...)` | 用户提供的模板 |
+
+**建议：** 日常 90% 用 f-string，批量用 join，模板用 `.format()` 或 Template。
+
+### 6. 常见坑
+
+```python
+# 坑 1: 字符串切片不报 IndexError
+s = "hi"
+print(s[0])    # "h"
+print(s[5:10]) # "" — 不报错！
+print(s[5])    # ❌ IndexError — 但单个索引会报
+
+# 坑 2: str 转 float 可能比较器失败
+"1.5" > "10.0"   # True! 字符串比较是字典序，不是数值
+"1.5" > "1.49"   # True — 字典序 5 > 4
+# ✅ 比较前先转成数值
+float("1.5") > float("10.0")  # False
+
+# 坑 3: encode/decode 要指定编码
+"中文".encode()           # UTF-8（默认）
+"中文".encode("gbk")      # 如果预期是 GBK
+b"\xd6\xd0\xce\xc4".decode("gbk")  # "中文"
+b"\xe4\xb8\xad\xe6\x96\x87".decode("utf-8")  # "中文"
+
+# 坑 4: 单引号和双引号没有区别
+'hello' == "hello"  # True
+# 只是为了嵌套方便：f"He said: {'hello'}"
+
+# 坑 5: 3.12 之前的 f-string 不能嵌套相同引号
+# ❌ f"Name: {"Leo"}"
+# ✅ f'Name: {"Leo"}'
+```
+
+### 7. 代码验证
+
+```python
+# 验证 join 的性能优势
+import time
+
+words = ["word"] * 50000
+
+def test_plus():
+    r = ""
+    for w in words:
+        r += w
+    return r
+
+def test_join():
+    return "".join(words)
+
+t1 = time.perf_counter()
+test_plus()
+print(f"+=: {time.perf_counter()-t1:.3f}s")
+
+t1 = time.perf_counter()
+test_join()
+print(f"join: {time.perf_counter()-t1:.3f}s")
 ```
 
 ---
 
-## 五、容器类型
+## 四、容器类型
 
-### 列表（list）— 最常用的容器
+### 1. 是什么
+
+Python 有四种内置容器：list、tuple、set、dict。它们覆盖了"有序/无序"×"可变/不可变"的所有组合。
+
+| | 有序 | 无序 |
+|--|------|------|
+| **可变** | list | set, dict(key) |
+| **不可变** | tuple | frozenset |
+
+### 2. 解决了什么问题
+
+- 每种容器针对**不同的使用模式**做了优化
+- 语法简洁——字面量语法 `[]`, `()`, `{}`, `{k:v}` 比其他语言更干净
+- 切片、推导式、解包等操作让数据转换堪称艺术
+
+### 3. 核心理论
+
+#### 列表（list）— 最常用的容器
 
 ```python
 # 创建
@@ -298,19 +575,22 @@ squares = []
 for x in range(10):
     squares.append(x**2)
 
-# 条件过滤
+# 带条件过滤
 evens = [x for x in range(20) if x % 2 == 0]
 
-# 嵌套推导
+# 嵌套推导（按 for 的顺序阅读）
 matrix = [[i*3 + j for j in range(3)] for i in range(3)]
 # [[0,1,2],[3,4,5],[6,7,8]]
 
-# 展开嵌套列表
+# 展开嵌套列表（从里到外读）
 flat = [x for row in matrix for x in row]
 # [0,1,2,3,4,5,6,7,8]
+
+# 字典列表推导
+users = [{"name": n, "score": s} for n, s in zip(names, scores)]
 ```
 
-### 元组（tuple）— 不可变列表
+#### 元组（tuple）— 不可变列表
 
 ```python
 # 创建
@@ -319,7 +599,8 @@ single = (1,)   # 注意逗号！(1) 是 int
 
 # 解包
 x, y = point
-# 变量交换不需要临时变量
+
+# 变量交换（底层就是元组打包/解包）
 a, b = b, a
 
 # 星号解包
@@ -328,9 +609,15 @@ first, *middle, last = [1, 2, 3, 4, 5]
 
 # 元组可哈希 → 能用做字典键
 d = {(1, 2): "point_a"}
+
+# 命名元组更易读
+from collections import namedtuple
+Point = namedtuple("Point", ["x", "y"])
+p = Point(3, 4)
+print(p.x, p.y)  # 3 4
 ```
 
-### 集合（set）— 无序不重复
+#### 集合（set）— 无序不重复
 
 ```python
 s = {1, 2, 3, 3, 2}
@@ -349,12 +636,12 @@ a | b    # {1, 2, 3, 4}    并集
 a - b    # {1}             差集
 a ^ b    # {1, 4}          对称差集
 
-# O(1) 查找 — 比列表快得多
-if item in large_set:   # O(1)
-if item in large_list:  # O(n)
+# O(1) 查找 vs O(n) 查找
+if item in large_set:   # O(1) 无论集合多大
+if item in large_list:  # O(n) 越慢越慢
 ```
 
-### 字典（dict）— 关联数组
+#### 字典（dict）— 关联数组
 
 ```python
 user = {
@@ -390,13 +677,144 @@ squares = {x: x**2 for x in range(5)}
 # {0:0, 1:1, 2:4, 3:9, 4:16}
 ```
 
+### 4. 场景
+
+#### 场景 1：去重并保留顺序
+
+```python
+# list → set → list 会丢失顺序
+items = [3, 1, 2, 3, 1, 4]
+unique = list(set(items))   # [1, 2, 3, 4] — 顺序变了
+
+# ✅ 去重并保留顺序（利用字典有序了）
+unique = list(dict.fromkeys(items))  # [3, 1, 2, 4]
+
+# 或者用循环
+seen = set()
+unique = []
+for x in items:
+    if x not in seen:
+        seen.add(x)
+        unique.append(x)
+```
+
+#### 场景 2：zip 配合 dict 构建映射
+
+```python
+keys = ["name", "age", "city"]
+values = ["Leo", 30, "Adelaide"]
+
+# 两个列表变字典
+user = dict(zip(keys, values))
+# {'name': 'Leo', 'age': 30, 'city': 'Adelaide'}
+
+# 转置字典
+original = {"a": 1, "b": 2, "c": 1}
+inverted = {}
+for k, v in original.items():
+    inverted.setdefault(v, []).append(k)
+# {1: ['a', 'c'], 2: ['b']}
+```
+
+#### 场景 3：嵌套列表展开
+
+```python
+# 任意深度展开
+def flatten(nested):
+    for item in nested:
+        if isinstance(item, (list, tuple)):
+            yield from flatten(item)
+        else:
+            yield item
+
+nested = [1, [2, [3, 4], 5], 6]
+list(flatten(nested))  # [1, 2, 3, 4, 5, 6]
+```
+
+### 5. 替代方案对比
+
+| 场景 | 方法 | 效率 | 可读性 |
+|------|------|------|-------|
+| 列表 loop 构建 | 列表推导 | ✅ 快 | ✅ 一行 |
+| 列表 loop 构建 | for + append | 差不多 | 啰嗦 |
+| 字典条件构建 | 字典推导 | ✅ 快 | ✅ 一行 |
+| 去重 | set() | O(n) | ✅ 但有损耗 |
+| 去重且保序 | dict.fromkeys | O(n) | 推荐 |
+| 查找存在 | in(集合) | O(1) | ✅ |
+| 查找存在 | in(列表) | O(n) | ❌ 大数据慢 |
+
+### 6. 常见坑
+
+```python
+# 坑 1: 列表的 * 是浅拷贝
+matrix = [[0]*3] * 3   # [[0,0,0],[0,0,0],[0,0,0]]
+matrix[0][0] = 1
+print(matrix)  # [[1,0,0],[1,0,0],[1,0,0]] — 三个子列表是同一个！
+
+# ✅ 正确方式
+matrix = [[0]*3 for _ in range(3)]
+
+# 坑 2: 元组的逗号 vs 括号
+t = (1)    # int，不是元组
+t = (1,)   # 元组
+t = 1,     # 元组（括号可选）
+
+# 坑 3: 集合的空字面量
+s = {}     # 空字典！
+s = set()  # 空集合
+
+# 坑 4: dict 的 update 会覆盖
+d = {"a": 1, "b": 2}
+d.update({"b": 3, "c": 4})
+print(d)  # {'a': 1, 'b': 3, 'c': 4} — b 被覆盖了
+
+# 坑 5: 列表推导的变量泄漏（Python 2 问题，3 已修复）
+[x for x in range(10)]
+# print(x)  # Python 2 会输出 9，Python 3 报 NameError ✅
+```
+
+### 7. 代码验证
+
+```python
+# 验证 set 的 O(1) 查找
+import time
+
+n = 1000000
+items_list = list(range(n))
+items_set = set(items_list)
+
+target = n - 1
+
+t0 = time.perf_counter()
+print(target in items_list)
+print(f"list: {time.perf_counter()-t0:.6f}s")
+
+t0 = time.perf_counter()
+print(target in items_set)
+print(f"set: {time.perf_counter()-t0:.6f}s")
+
+# 百万级数据，list 是微秒级，set 是纳秒级
+```
+
 ---
 
-## 六、控制流
+## 五、控制流
 
-### for-else / while-else
+### 1. 是什么
 
-这是 Python 独有的，其他语言没有。`else` 在循环**没有 break** 时执行：
+Python 的控制流除了常见的 `if/for/while`，还有三个其他语言没有或很晚才有的特性：`for-else`、海象操作符 `:=`、`match-case`。
+
+### 2. 解决了什么问题
+
+- **for-else**：解决"是否找到了/是否完成了"这种需要 flag 变量的常见模式
+- **海象操作符**：消除"先赋值再用值"的重复代码
+- **match-case**：替代冗长的 if-elif 链，且能匹配数据结构
+
+### 3. 核心理论
+
+#### for-else / while-else
+
+`else` 在循环**没有被执行 break** 时触发：
 
 ```python
 # 找素数
@@ -410,6 +828,8 @@ def is_prime(n):
         return True
     return False
 
+# ✅ else 使代码更"扁平"——不需要 maintain 一个 flag 变量
+
 # 实战：找可用端口
 for port in [8080, 8081, 8082]:
     if check_port(port):
@@ -419,12 +839,26 @@ else:
     raise RuntimeError("No available port")
 ```
 
-### 海象操作符 :=（3.8+）
-
-在一行内同时赋值和用值，避免重复代码：
+没有 `for-else` 的话，需要用 flag：
 
 ```python
-# 场景 1：if 条件中
+# 没有 for-else
+found = False
+for port in [8080, 8081, 8082]:
+    if check_port(port):
+        print(f"Using port {port}")
+        found = True
+        break
+if not found:
+    raise RuntimeError("No available port")
+```
+
+#### 海象操作符 :=（3.8+）
+
+赋值语句和条件判断合二为一：
+
+```python
+# 场景 1：if 中使用
 # 之前
 data = get_data()
 if len(data) > 10:
@@ -445,14 +879,22 @@ while line:
 while line := file.readline():
     process(line)
 
-# 场景 3：列表推导式
+# 场景 3：列表推导式过滤
 # 筛选变换后非 None 的结果
 results = [y for x in data if (y := transform(x)) is not None]
+
+# 场景 4：正则匹配
+if (match := re.search(pattern, text)):
+    print(f"Found: {match.group()}")
 ```
 
-### match-case（3.10+）
+**限制和规范：**
+- 必须用括号括起来才能用在 if 条件中 `if (n := len(x)) > 0:`
+- 不要滥用——只用在消除重复判断的场景
 
-Python 的 switch-case，但不止于此。它可以**模式匹配**——即匹配*结构*而不是值：
+#### match-case（3.10+）
+
+Python 的 match-case 不是简单的 switch——它可以**模式匹配**（匹配结构而不是值）：
 
 ```python
 # 基础——替代 if-elif
@@ -460,57 +902,223 @@ def http_status(code):
     match code:
         case 200:
             return "OK"
-        case 301 | 302:  # 多个值用 | 连接
+        case 301 | 302:   # 多个值用 |
             return "Redirect"
         case 404:
             return "Not Found"
-        case _:          # 默认分支
+        case _:            # 默认
             return "Unknown"
 
 # 进阶——匹配结构
 def process_command(cmd):
     match cmd:
-        # ("quit", ...) 结构
         case ("quit",):
             return "bye"
-        
-        # ("move", x, y) 结构 + guard 条件
+
         case ("move", x, y) if 0 <= x <= 100 and 0 <= y <= 100:
             return f"Moving to ({x}, {y})"
-        
-        # 字典匹配
+
         case {"type": "user", "name": name, "age": age}:
             return f"User {name}, {age}"
-        
-        # 列表匹配
+
         case [int() as x, int() as y]:
             return f"Coordinates: {x}, {y}"
-        
+
         case _:
             return "Unknown command"
 
-# 比 switch 强的地方：
-# 1. 匹配结构，不仅仅是数值
-# 2. 支持 guard（if 条件）
-# 3. 自动解构赋值
-# 4. | 连接多个模式
+# 匹配枚举
+from enum import Enum, auto
+
+class Color(Enum):
+    RED = auto()
+    GREEN = auto()
+    BLUE = auto()
+
+def describe(color):
+    match color:
+        case Color.RED:
+            return "Red like fire"
+        case Color.GREEN:
+            return "Green like forest"
+        case _:
+            return "Other color"
+```
+
+**比 switch 强的地方：**
+1. 匹配结构，不仅仅是数值
+2. 支持 guard（if 条件）
+3. 自动解构赋值
+4. `|` 连接多个模式
+
+### 4. 场景
+
+#### 场景 1：for-else 替代哨兵变量
+
+```python
+# 查快递状态
+tracking_numbers = ["SF123", "SF456", "SF789"]
+
+for tn in tracking_numbers:
+    if query_status(tn) == "delivered":
+        print(f"Found delivered: {tn}")
+        break
+else:
+    print("No delivered packages found")
+```
+
+#### 场景 2：海象在解析中的应用
+
+```python
+import re
+
+# 多次正则提取
+def parse_config(text):
+    config = {}
+    # 解析 key=value 行
+    pattern = re.compile(r"(\w+)\s*=\s*(.*)")
+
+    for line in text.splitlines():
+        if m := pattern.match(line.strip()):
+            key, value = m.groups()
+            config[key] = value
+            print(f"  Parsed: {key} = {value}")
+
+    return config
+```
+
+#### 场景 3：match-case 的 JSON 路由
+
+```python
+def handle_event(event):
+    """处理各种事件——比 if-elif 干净得多"""
+    match event:
+        case {"type": "login", "user": user}:
+            return handle_login(user)
+
+        case {"type": "logout", "user": user, "session": session}:
+            return handle_logout(user, session)
+
+        case {"type": "error", "code": code, "message": msg}:
+            return handle_error(code, msg)
+
+        case {"type": "message", "text": text, "reply_to": reply_to}:
+            return handle_reply(text, reply_to)
+
+        case {"type": "message", "text": text}:
+            return handle_message(text)
+
+        case _:
+            raise ValueError(f"Unknown event: {event}")
+```
+
+### 5. 替代方案对比
+
+| 场景 | 推荐 | 不推荐 |
+|------|------|-------|
+| 找东西找到就停 | for-else | flag 变量 |
+| while 读行 | `while line := f.readline():` | `while True: ... if not line: break` |
+| if 中使用赋值+判断 | `if (n := len(x)) > 0:` | `n = len(x)` + `if n > 0:` |
+| 值匹配 | match-case | if-elif-elif-... |
+| 结构匹配 | match-case | isinstance + 手动解包 |
+
+### 6. 常见坑
+
+```python
+# 坑 1: for-else 的 break 判断
+def find_item(items, target):
+    for i, item in enumerate(items):
+        if item == target:
+            print(f"Found at {i}")
+            break
+    else:
+        print("Not found")
+        return None
+    return i
+
+# 注意：如果是函数中间 return 而不是 break，else 也会执行！
+for i in range(3):
+    if i == 1:
+        return  # 从函数返回，不是 break
+else:
+    print("This runs!")  # ❌ 因为没 break
+# 所以 for-else 只适用 break 场景，不适用 return
+
+# 坑 2: 海象操作符的优先级
+# ❌ if n := len(x) > 0:  # 等价于 n := (len(x) > 0) → n=True/False
+if (n := len(x)) > 0:     # ✅ 正确
+
+# 坑 3: match-case 的_放在最后
+match code:
+    case 200: ...
+    case _: ...
+    case 404: ...  # ❌ Unreachable
+
+# 坑 4: match-case 不是 switch——case 后不能跟任意表达式
+x = 10
+match 1:
+    case x: ...  # 这不匹配 x 的值！这是赋值给了 x
+    # 要用 case _ if x == 1: ... 才行
+```
+
+### 7. 代码验证
+
+```python
+# 验证海象操作符消除重复
+import re
+import time
+
+data = "error" * 10000
+
+def without_walrus():
+    results = []
+    word = ""
+    for ch in data:
+        if ch == 'e':
+            word = "error"
+        if len(word) > 0:
+            results.append(word)
+    return results
+
+def with_walrus():
+    results = []
+    word = ""
+    for ch in data:
+        if ch == 'e':
+            word = "error"
+        if (n := len(word)) > 0:
+            results.append((n, word))
+    return results
 ```
 
 ---
 
-## 七、函数
+## 六、函数
 
-### 参数种类（这是 Python 独有特色）
+### 1. 是什么
+
+Python 的函数比其他语言灵活得多——参数系统极其丰富，且函数本身是一等公民（一切皆对象）。
+
+### 2. 解决了什么问题
+
+- 参数系统的灵活性让 API 设计更优雅——调用方能选择传位置参数还是关键字参数
+- `*args` / `**kwargs` 解决了"函数要支持任意数量参数"的问题
+- 闭包解决了"函数需要携带上下文"的问题（不用定义一个类）
+- 可变默认值陷阱是一个经典测试题——理解它才算理解 Python 对象模型
+
+### 3. 核心理论
+
+#### 参数系统
 
 ```python
 def complex_func(
-    a,                # 位置参数
-    /,                # 分隔符：前面只能位置传参
-    b,                # 位置或关键字
+    a,                # 位置参数（必填）
+    /,                # 分隔符：前面只能位置传参（3.8+）
+    b,                # 位置或关键字参数
     *,                # 分隔符：后面只能关键字传参
     c,                # 仅关键字参数
-    d=42,             # 默认值参数
-    **kwargs          # 关键字参数收集（打包成 dict）
+    d=42,             # 默认值参数（可选，在 * 后面也仅限关键字）
+    **kwargs          # 关键字参数收集
 ):
     print(a, b, c, d, kwargs)
 
@@ -518,20 +1126,27 @@ def complex_func(
 complex_func(1, 2, c=3, d=4, extra="hello")
 # 1 2 3 4 {'extra': 'hello'}
 
-# 错调用
+# 错误调用
 # complex_func(1, 2, 3, 4, extra="hello")  # ❌ c 不能位置传
 # complex_func(a=1, b=2, c=3)                # ❌ a 不能关键字传
 ```
 
-### 可变参数
+**为什么需要 / 和 * ：**
+- `/` 前面的参数只能位置传——这是为了以后可以改参数名而不影响已有代码
+- `*` 后面的参数只能关键字传——避免参数太多时搞错顺序
+
+#### 可变参数
 
 ```python
 # *args — 任意数量位置参数
 def sum_all(*numbers):
     return sum(numbers)
 
-print(sum_all(1, 2, 3))       # 6
-print(sum_all(1, 2, 3, 4, 5)) # 15
+print(sum_all(1, 2, 3))        # 6
+print(sum_all(1, 2, 3, 4, 5))  # 15
+
+# 解包调用
+sum_all(*[1, 2, 3])  # 6 — 列表展开传入
 
 # **kwargs — 任意数量关键字参数
 def build_url(base, **params):
@@ -540,34 +1155,15 @@ def build_url(base, **params):
 
 print(build_url("http://api.com", name="Leo", age=30))
 # http://api.com?name=Leo&age=30
+
+# 解包调用
+build_url("http://api.com", **{"name": "Leo", "age": 30})
 ```
 
-### 闭包与工厂函数
+#### 可变默认值陷阱
 
 ```python
-def make_counter(start=0):
-    count = [start]  # 用列表模拟可变闭包（不可变类型需要用容器）
-    
-    def increment(step=1):
-        count[0] += step
-        return count[0]
-    
-    def reset():
-        count[0] = start
-    
-    return increment, reset
-
-inc, reset = make_counter(10)
-print(inc())    # 11
-print(inc(5))   # 16
-reset()
-print(inc())    # 11
-```
-
-### 可变默认值陷阱 — 经典面试题
-
-```python
-# ❌ 大坑
+# ❌ 经典大坑
 def add_item(item, items=[]):
     items.append(item)
     return items
@@ -576,8 +1172,7 @@ print(add_item(1))      # [1]
 print(add_item(2))      # [1, 2]——不是 [2]！
 print(add_item(3))      # [1, 2, 3]
 
-# 原因：默认值在函数定义时求值一次，之后每次都改同一个列表
-# 打印默认值看看：
+# 原因：默认值在函数定义时求值一次，之后每次都改同一个列表对象
 print(add_item.__defaults__)  # ([1, 2, 3],)
 
 # ✅ 正确做法
@@ -586,9 +1181,38 @@ def add_item(item, items=None):
         items = []
     items.append(item)
     return items
+
+print(add_item(1))  # [1]
+print(add_item(2))  # [2]
 ```
 
-### lambda
+#### 闭包
+
+```python
+def make_counter(start=0):
+    count = start
+
+    def increment(step=1):
+        nonlocal count  # nonlocal 是关键！不能省
+        count += step
+        return count
+
+    def reset():
+        nonlocal count
+        count = start
+
+    return increment, reset
+
+inc, reset = make_counter(10)
+print(inc())     # 11
+print(inc(5))    # 16
+reset()
+print(inc())     # 11
+```
+
+**闭包的核心：** 内部函数"记住"了外部函数的变量，即使外部函数已经返回。
+
+#### lambda
 
 ```python
 # 单行匿名函数
@@ -601,31 +1225,224 @@ pairs.sort(key=lambda x: x[1])  # 按第二个元素排序
 
 sorted([-3, 1, -2, 4], key=lambda x: abs(x))
 # [1, -2, -3, 4]
+
+# 限制：只能写表达式，不能写语句
+# lambda x: x + 1                          # ✅
+# lambda x: if x > 0: return x             # ❌
+# lambda x: x if x > 0 else 0              # ✅ 三元表达式可以
+```
+
+### 4. 场景
+
+#### 场景 1：参数校验 + 关键字参数
+
+```python
+def create_user(
+    /,                     # username 只能位置传
+    username: str,
+    *,                     # 以下必须关键字传
+    email: str,
+    age: int | None = None,
+    is_admin: bool = False,
+):
+    """创建用户——明确区分必填和可选"""
+    if not username.isalnum():
+        raise ValueError("Username must be alphanumeric")
+
+    return {
+        "username": username,
+        "email": email,
+        "age": age,
+        "is_admin": is_admin,
+    }
+
+# 调用
+create_user("Leo", email="leo@example.com")
+# create_user(username="Leo", email="...")  # ❌ username 不能关键字传
+```
+
+#### 场景 2：可变参数装饰器
+
+```python
+import time
+from functools import wraps
+
+def timed(reps=1):
+    """测量函数执行时间的装饰器"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            total = 0
+            for _ in range(reps):
+                start = time.perf_counter()
+                result = func(*args, **kwargs)
+                total += time.perf_counter() - start
+            print(f"{func.__name__}: avg {total/reps:.6f}s")
+            return result
+        return wrapper
+    return decorator
+
+@timed(reps=10)
+def slow_function():
+    time.sleep(0.01)
+
+slow_function()  # slow_function: avg 0.0100xxxs
+```
+
+### 5. 替代方案对比
+
+| 需求 | Python | 其他语言 | 说明 |
+|------|--------|---------|------|
+| 可选参数 | 默认值 | 重载 | Python 简洁 |
+| 任意数量参数 | *args | 可变参数/C++initializer_list | 差不多 |
+| 关键字参数 | **kwargs | 无/命名参数 | Python 独家 |
+| 仅位置参数 | `/` | 传统 | 3.8+ |
+| 仅关键字参数 | `*` | 无 | Python 独家 |
+| 匿名函数 | lambda | 箭头函数 | 其他语言广泛 |
+
+### 6. 常见坑
+
+```python
+# 坑 1: lambda 闭包延迟绑定
+funcs = [lambda: i for i in range(5)]
+print([f() for f in funcs])  # [4, 4, 4, 4, 4]！不是 [0,1,2,3,4]
+
+# 原因：lambda 中的 i 是引用，循环结束时 i=4
+# ✅ 默认参数绑定当前值
+funcs = [lambda i=i: i for i in range(5)]
+print([f() for f in funcs])  # [0, 1, 2, 3, 4]
+
+# 坑 2: 默认值引用同一个可变对象
+# 参见上面的可变默认值陷阱
+
+# 坑 3: *args 和 **kwargs 混合时**kwargs 必须在最后
+# def f(**kwargs, *args):  # ❌ SyntaxError
+
+# 坑 4: nonlocal 只向上查找最近的非全局作用域
+x = "global"
+
+def outer():
+    x = "outer"
+    def inner():
+        x = "inner"
+        def innermost():
+            nonlocal x  # 这是 inner 的 x，不是 outer 的
+            x = "changed"
+    innermost()
+    print(x)  # "inner"——outer 的 x 没变
+```
+
+### 7. 代码验证
+
+```python
+# 验证默认值在定义时创建
+import time
+
+def get_default_list(value):
+    """返回新列表"""
+    return [value]
+
+def get_default_list_bad(
+    value,
+    items=[time.time()],  # 定义时创建，后续调用都用同一个
+):
+    items.append(value)
+    return items
+
+print(get_default_list_bad(1))  # [时间戳, 1]
+print(get_default_list_bad(2))  # [时间戳, 1, 2]
+
+# 验证函数对象的 __defaults__
+print(get_default_list_bad.__defaults__)
+# 显示同一个列表对象
+```
+
+```python
+# 验证 nonlocal 作用域链
+def make_counters():
+    counters = {"a": 0, "b": 0}
+
+    def inc_a():
+        counters["a"] += 1  # 不需要 nonlocal！
+        return counters["a"]
+
+    def inc_b():
+        counters["b"] += 1
+        return counters["b"]
+
+    # 为什么这里不用 nonlocal？
+    # 因为 counters 是 dict——我们修改的是内容，不是重新赋值
+    # nonlocal 只在重新绑定变量名时（=赋值）需要
+
+    return inc_a, inc_b
+
+inc_a, inc_b = make_counters()
+print(inc_a())  # 1
+print(inc_a())  # 2
+print(inc_b())  # 1
 ```
 
 ---
 
-## 八、异常处理
+## 七、异常处理
 
-### try-except-else-finally
+### 1. 是什么
+
+Python 的异常处理采用 **EAFP**（Easier to Ask Forgiveness than Permission）哲学——先试着做，出错了再处理。这和 Java/C 的 LBYL（Look Before You Leap）形成对比。
+
+### 2. 解决了什么问题
 
 ```python
-try:
-    result = risky_operation()
-except ValueError as e:          # 捕获特定异常
-    print(f"Value error: {e}")
-except (IOError, OSError) as e:  # 捕获多个异常
-    print(f"IO error: {e}")
-except Exception:                # 捕获所有（少用）
-    print("Something wrong")
-    raise                        # 重新抛出
-else:
-    print(f"Success: {result}")  # 没异常才执行（比放在 try 里更清晰）
-finally:
-    cleanup()                    # 无论是否有异常都执行
+# LBYL（其他语言风格）
+def divide_list(values, divisor):
+    if divisor == 0:
+        return None
+    results = []
+    for v in values:
+        if isinstance(v, (int, float)):
+            results.append(v / divisor)
+        else:
+            results.append(None)
+    return results
+
+# EAFP（Python 风格）
+def divide_list(values, divisor):
+    results = []
+    for v in values:
+        try:
+            results.append(v / divisor)
+        except (ZeroDivisionError, TypeError):
+            results.append(None)
+    return results
 ```
 
-### 自定义异常
+EAFP 的优势：
+- 代码更短——不用重复检查条件
+- 没有竞态条件——检查和操作之间不会有其他线程改变状态
+- 异常路径和正常路径分离
+
+### 3. 核心理论
+
+```python
+# 完整结构
+try:
+    result = risky_operation()
+except ValueError as e:           # 捕获特定异常
+    print(f"Value error: {e}")
+except (IOError, OSError) as e:   # 捕获多个异常
+    print(f"IO error: {e}")
+except Exception:                  # 捕获所有（少用）
+    print("Something wrong")
+    raise                          # 重新抛出
+else:
+    print(f"Success: {result}")   # 没异常才执行
+finally:
+    cleanup()                      # 无论是否有异常都执行
+```
+
+**else 的妙用：** 把"成功处理逻辑"放在 else 中，而不是在 try 块末尾——这样不会意外捕获到成功处理逻辑中的异常。
+
+#### 自定义异常
 
 ```python
 class AppError(Exception):
@@ -638,11 +1455,18 @@ class ValidationError(AppError):
         self.message = message
         super().__init__(f"{field}: {message}")
 
+class NotFoundError(AppError):
+    def __init__(self, resource: str, id: int):
+        self.resource = resource
+        self.id = id
+        super().__init__(f"{resource} #{id} not found")
+
 # 使用
 raise ValidationError("email", "Invalid format")
+raise NotFoundError("User", 42)
 ```
 
-### raise ... from（异常链）
+#### 异常链
 
 ```python
 def load_config(path):
@@ -650,29 +1474,186 @@ def load_config(path):
         with open(path) as f:
             return json.load(f)
     except FileNotFoundError as e:
-        raise ConfigError(f"Config not found: {path}") from e
-    # from e 保留了原始异常信息，方便调试
+        raise AppError(f"Config not found: {path}") from e
+    except json.JSONDecodeError as e:
+        raise AppError(f"Invalid JSON in {path}") from e
+
+# "from e" 保留了原始异常信息
+try:
+    load_config("missing.json")
+except AppError:
+    import traceback
+    traceback.print_exc()
+    # 显示完整的异常链：FileNotFoundError → AppError
+```
+
+### 4. 场景
+
+#### 场景 1：异常嵌套的层级
+
+```python
+# 多层函数调用时，在最上层统一处理
+class ServiceError(Exception):
+    pass
+
+def db_query(sql):
+    # 最底层（原始异常）
+    raise ConnectionError("DB connection refused")
+
+def get_user(user_id):
+    try:
+        return db_query(f"SELECT * FROM users WHERE id={user_id}")
+    except ConnectionError as e:
+        raise ServiceError("Database unavailable") from e
+
+def handler():
+    # 最上层（统一处理）
+    try:
+        user = get_user(42)
+        return {"status": "ok", "data": user}
+    except ServiceError as e:
+        return {"status": "error", "message": str(e)}
+```
+
+#### 场景 2：with contextlib.suppress 优雅忽略
+
+```python
+from contextlib import suppress
+
+# 不用 suppress：
+try:
+    os.remove("temp.txt")
+except FileNotFoundError:
+    pass
+
+# 用 suppress（更简洁）：
+with suppress(FileNotFoundError):
+    os.remove("temp.txt")
+
+# 多个异常
+with suppress(FileNotFoundError, PermissionError):
+    os.remove("protected.txt")
+```
+
+### 5. 替代方案对比
+
+| 模式 | Python 推荐 | 适用场景 |
+|------|------------|---------|
+| 先检查再做 | LBYL | 简单条件判断，内部操作 |
+| 先试后处理 | EAFP | IO、网络、用户输入 |
+| 忽略特定异常 | suppress | 清理操作（删除不存在的文件） |
+| 重新抛出 | `raise` | 需要记录日志但不想处理 |
+| 异常链 | `raise ... from e` | 转换异常种类时 |
+
+### 6. 常见坑
+
+```python
+# 坑 1: except 的顺序
+try:
+    process()
+except Exception:      # 先捕获所有
+    print("caught")
+except ValueError:      # 永远不会到这里
+    print("never")
+
+# ✅ 先具体后通用
+try:
+    process()
+except ValueError:
+    print("Value error")
+except TypeError:
+    print("Type error")
+except Exception:
+    print("Other error")
+
+# 坑 2: except: 没指定会捕获 SystemExit 和 KeyboardInterrupt
+# 永远不要裸 except:
+try:
+    user_input()
+except:      # 会吞掉 Ctrl+C！
+    pass
+
+# ✅ 至少写 except Exception:
+try:
+    user_input()
+except Exception:
+    pass     # Ctrl+C 仍然工作
+
+# 坑 3: finally 的 return 会覆盖其他 return
+def f():
+    try:
+        return "try"
+    finally:
+        return "finally"  # ❌ 覆盖了 try 的 return
+
+print(f())  # "finally"
+
+# 坑 4: 空 except 不推荐——你永远不知道什么异常
+```
+
+### 7. 代码验证
+
+```python
+# 验证 else 的用途
+try:
+    result = int("42")
+except ValueError:
+    print("Invalid number")
+else:
+    # 只有成功才执行
+    print(f"Result is {result}")
+    # 如果这里写在 try 里不小心抛异常，也会被上面的 except 捕获
 ```
 
 ---
 
-## 九、文件 I/O
+## 八、文件 I/O 与 pathlib
 
-### with 语句（上下文管理器）
+### 1. 是什么
+
+Python 处理文件有两种主要方式：传统的 `open()` + `with` 语句，以及现代的 `pathlib.Path` 对象（Python 3.4+）。
+
+### 2. 解决了什么问题
+
+- 传统文件操作需要 `open/read/write/close` 手动管理生命期
+- `os.path` 的函数式 API（`os.path.join`, `os.path.exists`）不 OOP，难链式调用
+- 跨平台路径分隔符（`/` vs `\`）需要手动处理
+- `pathlib` 用对象方法替代了零散的 os.path 函数
+
+### 3. 核心理论
+
+#### with 语句（上下文管理器）
 
 ```python
 # 不需要手动 close——with 退出时自动关闭
 with open("data.txt", "r", encoding="utf-8") as f:
-    content = f.read()       # 整个文件
-    lines = f.readlines()    # 按行列表
+    content = f.read()        # 整个文件
+    lines = f.readlines()     # 按行列表
 
-# 大文件逐行读取
+# 大文件逐行读取（不加载全部到内存）
 with open("large.log", "r") as f:
-    for line in f:           # 惰性读取，不会一次加载整个文件
+    for line in f:            # 惰性读取
         process(line)
+
+# 写文件
+with open("output.txt", "w", encoding="utf-8") as f:
+    f.write("Hello, World!\n")
+    f.writelines(["line1\n", "line2\n"])
 ```
 
-### pathlib（Python 3.4+）— 比 os.path 好 10 倍
+打开模式速查：
+
+| 模式 | 读/写 | 指针位置 | 文件存在 | 文件不存在 |
+|------|-------|---------|---------|-----------|
+| `"r"` | 读 | 开头 | ✅ | ❌ 报错 |
+| `"r+"` | 读写 | 开头 | ✅ | ❌ 报错 |
+| `"w"` | 写 | 开头 | ❌ 清空 | ✅ 创建 |
+| `"w+"` | 读写 | 开头 | ❌ 清空 | ✅ 创建 |
+| `"a"` | 写 | 末尾 | ✅ 追加 | ✅ 创建 |
+| `"a+"` | 读写 | 末尾 | ✅ 追加 | ✅ 创建 |
+| `"x"` | 写 | 开头 | ❌ 报错 | ✅ 创建（排他） |
+
+#### pathlib（推荐）
 
 ```python
 from pathlib import Path
@@ -689,11 +1670,13 @@ p.exists()         # True/False
 p.is_file()
 p.is_dir()
 
-# 读写（最常用）
-p.read_text()                  # 读为字符串
+# 读写文本
+p.read_text()                  # 整个文件为字符串
 p.write_text("hello")          # 写入字符串
-p.read_bytes()                 # 读为字节
-p.write_bytes(b"\x00\x01")     # 写入字节
+
+# 读写字节
+p.read_bytes()                 # bytes
+p.write_bytes(b"\x00\x01")     # 写入
 
 # 遍历
 for py_file in Path("src").rglob("*.py"):
@@ -701,29 +1684,179 @@ for py_file in Path("src").rglob("*.py"):
 
 # 创建目录
 Path("data/logs").mkdir(parents=True, exist_ok=True)
+
+# 重命名/移动
+Path("old.txt").rename("new.txt")
+
+# 路径拼接（重载了 / 运算符）
+data_dir = Path("data")
+log = data_dir / "logs" / "app.log"
+```
+
+### 4. 场景
+
+#### 场景 1：递归查找并处理文件
+
+```python
+from pathlib import Path
+
+def find_and_process(root, pattern, callback):
+    """在 root 下递归查找匹配 pattern 的文件，对每个文件调用 callback"""
+    root = Path(root)
+    for filepath in root.rglob(pattern):
+        if filepath.is_file():
+            callback(filepath)
+
+# 统计所有 .py 文件的行数
+total_lines = 0
+def count_lines(path):
+    global total_lines
+    content = path.read_text()
+    lines = content.count("\n") + 1
+    total_lines += lines
+    print(f"{path}: {lines} lines")
+
+find_and_process(".", "*.py", count_lines)
+print(f"Total: {total_lines} lines")
+```
+
+#### 场景 2：安全写入（防止写一半崩溃）
+
+```python
+from pathlib import Path
+import tempfile
+import os
+
+def safe_write(path: str, content: str):
+    """先写到临时文件，再原子替换"""
+    path = Path(path)
+    # 在同一个目录下创建临时文件（保证跨设备）
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        dir=path.parent,
+        suffix=".tmp",
+        delete=False,
+    ) as tmp:
+        tmp.write(content)
+        tmp_path = tmp.name
+
+    # 原子替换
+    os.replace(tmp_path, path)
+
+# 使用
+safe_write("config.json", '{"version": 2}')
+```
+
+#### 场景 3：内存文件（StringIO / BytesIO）
+
+```python
+from io import StringIO, BytesIO
+
+# 字符串当作文件操作（测试时超有用）
+buffer = StringIO()
+buffer.write("Hello\n")
+buffer.write("World\n")
+
+buffer.seek(0)
+print(buffer.read())  # "Hello\nWorld\n"
+
+# 字节缓冲
+bio = BytesIO()
+bio.write(b"\x00\x01\x02")
+bio.seek(0)
+data = bio.read()
+```
+
+### 5. 替代方案对比
+
+| 操作 | 旧方式（os.path） | 新方式（pathlib） |
+|------|-----------------|------------------|
+| 路径拼接 | `os.path.join("a", "b")` | `Path("a") / "b"` |
+| 文件名 | `os.path.basename(p)` | `Path(p).name` |
+| 扩展名 | `os.path.splitext(p)[1]` | `Path(p).suffix` |
+| 文件存在 | `os.path.exists(p)` | `Path(p).exists()` |
+| 创建目录 | `os.makedirs(p, exist_ok=True)` | `Path(p).mkdir(parents=True)` |
+| 遍历 | `os.walk(root)` | `Path(root).rglob("*")` |
+
+**推荐：** 新代码全部用 pathlib。
+
+### 6. 常见坑
+
+```python
+# 坑 1: 文件打开后忘记 close
+f = open("data.txt")
+data = f.read()
+# 没有 close！如果在 with 块中抛出异常，文件可能不会关闭
+
+# 当然用 with 就不会有这个问题
+with open("data.txt") as f:
+    data = f.read()
+# 自动关闭
+
+# 坑 2: pathlib 的 / 运算符返回 Path，不是 str
+p = Path("data") / "file.json"
+# 需要 str 的地方要显式转换
+# json.load(open(p))     # ✅ 有些函数接受 Path
+# os.system(f"cat {p}")  # ❌ TypeError
+os.system(f"cat {str(p)}")  # ✅
+
+# 坑 3: 文本模式 vs 二进制模式
+# Windows 上 "r" 模式会转换 \r\n → \n
+# 处理图片/压缩包要用二进制模式
+with open("image.jpg", "rb") as f:
+    data = f.read()  # bytes，不会被转换
+```
+
+### 7. 代码验证
+
+```python
+# 验证 pathlib / 运算符是纯路径操作（不访问磁盘）
+from pathlib import Path
+
+p = Path("/nonexistent/directory") / "file.txt"
+print(p)  # /nonexistent/directory/file.txt
+# 不会报错——路径只是字符串操作
+
+# verify 存在检查才访问磁盘
+print(p.exists())  # False — 这次才真的检查磁盘
 ```
 
 ---
 
-## 十、模块与 import
+## 九、模块与 import
+
+### 1. 是什么
+
+Python 的模块系统让代码可以按文件组织，并通过 `import` 跨文件复用。每个 `.py` 文件就是一个模块。
+
+### 2. 解决了什么问题
+
+- 代码拆分到不同文件，避免一个文件几千行
+- 命名空间隔离——`module.function()` 不会冲突
+- 复用已有的库——标准库和第三方包
+
+### 3. 核心理论
 
 ```python
 # 三种 import 方式
-import os                    # os 命名空间可用
+import os                    # os 命名空间可用，用 os.path.join()
 from pathlib import Path     # Path 直接可用
 from datetime import datetime as dt  # 别名
 
-# 绝对 vs 相对
-# 推荐绝对导入
+# 绝对 vs 相对导入
+# ✅ 推荐绝对导入
 from my_package.utils.helpers import parse_date
+
+# ❌ 相对导入容易混淆
+# from ..utils.helpers import parse_date
 
 # 模块也是对象
 import math
-print(math.__name__)   # "math"
-print(math.pi)         # 3.14159...
+print(math.__name__)  # "math"
+print(math.pi)        # 3.14159...
 ```
 
-### if __name__ == "__main__"
+#### if __name__ == "__main__"
 
 ```python
 # 当文件被直接运行时 __name__ = "__main__"
@@ -735,34 +1868,114 @@ if __name__ == "__main__":
     main()
 ```
 
+这个模式解决了"可执行/可导入"的双重需求：
+- `python script.py` → 执行 main()
+- `import script` → 不执行 main()
+
+#### 模块搜索路径
+
+```python
+import sys
+print(sys.path)
+# ['', '/usr/lib/python3.x', '/usr/local/lib/python3.x/site-packages', ...]
+
+# 可以动态添加
+sys.path.append("/my/custom/path")
+
+# 但推荐用 PYTHONPATH 环境变量或安装到 site-packages
+```
+
+### 4. 场景
+
+#### 场景 1：项目的标准包结构
+
+```
+myproject/
+├── pyproject.toml          # 项目元数据和依赖
+├── src/
+│   └── myproject/
+│       ├── __init__.py     # 包初始化
+│       ├── main.py         # 入口
+│       ├── config.py       # 配置
+│       └── utils/
+│           ├── __init__.py
+│           └── helpers.py
+└── tests/
+    ├── test_main.py
+    └── test_helpers.py
+```
+
+```python
+# src/myproject/main.py
+from myproject.config import load_config
+from myproject.utils.helpers import format_date
+
+def main():
+    config = load_config()
+    print(format_date(config["start_date"]))
+
+if __name__ == "__main__":
+    main()
+```
+
+### 5. 常见坑
+
+```python
+# 坑 1: 循环导入
+# a.py: from b import foo
+# b.py: from a import bar
+# 运行时会报 ImportError
+
+# 解决方案：
+# 1. 把公用的放第三个文件
+# 2. 延迟导入（在函数内 import）
+# 3. 重构结构消除循环依赖
+
+# 坑 2: import * 污染命名空间
+from os import *  # ❌ 不推荐
+# 你不知道导入了什么，可能会覆盖已有变量
+
+from pathlib import Path  # ✅ 明确
+
+# 坑 3: __init__.py 为空时，import package 不会自动导入子模块
+# 需要在 __init__.py 显式 import
+# __init__.py
+# from . import config
+# from . import utils
+
+# 坑 4: 相对导入在 __main__ 中不能用
+# 如果你的文件是入口（__main__），里面不能用 from . import xxx
+```
+
+### 6. 代码验证
+
+```python
+# 验证 __name__ 的不同值
+# running_as_main.py
+print(f"__name__ = {__name__}")  # 直接运行 → "__main__"
+```
+
 ---
 
-## 今日练习（动手才能记住）
+## 总结
 
-1. **海象操作符练习**：有一段数据 `data = [1, 2, 3, 4, 5, 6, 7, 8]`，用 `:=` 在 if 条件中计算长度，同时输出 "长度大于 5" 或 "长度 <= 5"
-
-2. **match-case 解析器**：用 match-case 写一个函数，解析下面这种命令格式：
-   ```python
-   commands = [
-       ("set", "theme", "dark"),
-       ("get", "config"),
-       ("delete", "user", 42),
-       {"cmd": "quit"},
-   ]
-   ```
-   对每种命令打印不同的输出。
-
-3. **字典处理**：给一个学生成绩字典 `{"Alice": 85, "Bob": 92, "Charlie": 78, "David": 95}`，用字典推导式筛选出成绩 >= 90 的学生，输出他们的名字和大写格式。
-
-4. **文件处理**：用 pathlib 在当前目录下找所有 `.txt` 文件，读取每个文件的第一行，输出到控制台。
+| 知识点 | 一句话记法 | 核心价值 |
+|--------|-----------|---------|
+| **Python 哲学** | 显式优于隐式，可读性优先 | 知道为什么 Python 这样设计 |
+| **数据类型** | int 无限、bool 是 int 子类、None 判断用 is | 避开常见类型坑 |
+| **字符串** | 用 f-string 格式化，用 join 拼接 | 性能和可读性双赢 |
+| **容器** | list 最常用、set 去重、dict 关联 | 选择正确的容器 |
+| **控制流** | for-else 替代哨兵、:= 消除重复、match 替代 if-elif | 少写样板代码 |
+| **函数** | 参数系统灵活、默认值陷阱要避开 | API 设计的核心 |
+| **异常** | EAFP、异常链保留上下文 | 生产级错误处理 |
+| **文件 I/O** | 用 with、用 pathlib | 更安全更现代 |
+| **模块** | `__name__ == "__main__"` 区分入口和库 | 代码组织的基础 |
 
 ---
 
 **明天预告：Day 2 — 进阶语法**
-- 装饰器（@语法糖、带参数装饰器、类装饰器）
+- 迭代器（Iterable vs Iterator、自定义迭代器）
+- 闭包（Closure、nonlocal）
+- 装饰器（@语法糖、带参数装饰器、functools.wraps）
 - 生成器（yield、yield from、生成器表达式）
-- 迭代器（可迭代 vs 迭代器、自定义迭代器）
-- 上下文管理器（with、contextmanager）
-- 包的导入机制和项目结构
-
-> 如果你还没准备好明天的节奏，现在告诉我，我可以调整内容深度。
+- 上下文管理器（with、contextmanager、__enter__/__exit__）
