@@ -2597,6 +2597,7 @@ print(f"__name__ = {__name__}")  # 直接运行 → "__main__"
 - 装饰器（@语法糖、带参数装饰器、functools.wraps）
 - 生成器（yield、yield from、生成器表达式）
 - 上下文管理器（with、contextmanager、__enter__/__exit__）
+
 # Day 2 — Python 进阶核心概念（完整版）
 
 ---
@@ -3614,6 +3615,7 @@ for x in count_up(3):
 | 上下文管理器 | 保证进入和退出配对执行 | 可以用生成器简写（@contextmanager） |
 
 这五个概念共同体现了 Python 的一个核心理念：**把重复的模式抽象出来，让语言替你做正确的事**。
+
 # Day 3 — 标准库兵器谱（完整版）
 
 ---
@@ -5501,6 +5503,7 @@ print(f"compiled: {time.perf_counter() - t0:.3f}s")
 ---
 
 *明天预告：Day 4 — OOP 深入 & 类型系统（metaclass 入门、描述器、ABC/Protocol、dataclass、类型注解）*
+
 # Day 4 — OOP 深入 & 类型系统（完整版）
 
 ---
@@ -6130,6 +6133,7 @@ def first(items: Sequence[T]) -> T | None:
 ---
 
 *明天预告：Day 5 — 并发编程入门（GIL、threading、multiprocessing、asyncio 基础、concurrent.futures）*
+
 # Day 5 — 并发编程入门（完整版）
 
 ---
@@ -6592,6 +6596,7 @@ results = asyncio.run(download_many(urls))
 ---
 
 *明天预告：Day 6 — 工程化实战（pytest、CLI 工具、项目结构、SQLAlchemy、FastAPI）*
+
 # Day 6 — 工程化实战（完整版）
 
 ---
@@ -7140,6 +7145,7 @@ print(item.owner.name)      # 反向关联
 ---
 
 *明天预告：Day 7 — 实战项目（从零搭建 URL 短链服务，综合所有知识）*
+
 # Day 7 — 实战项目：URL 短链服务（完整版）
 
 ---
