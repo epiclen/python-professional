@@ -1,6 +1,75 @@
 # Python Professional — All Days Combined (Day 1–7)
 
-This file is the complete content of the 7-day Python advanced bootcamp, merged from Day-1.md through Day-7.md.
+> 本文档将 7 天 Python 高级训练营的全部内容合并为一个文件，并附有完整的目录，方便导航查阅。
+
+---
+
+## 📖 目录
+
+### Day 1 — 语言基础速通
+
+- 一、Python 的"哲学"——先理解为什么
+- 二、核心数据类型
+- 三、字符串（str）
+- 四、容器类型
+- 五、控制流
+- 六、函数
+- 七、异常处理
+- 八、面向对象（OOP）基础
+- 九、文件 I/O 与 pathlib
+- 十、模块与 import
+
+### Day 2 — 核心编程范式
+
+- 一、迭代器（Iterator）
+- 二、闭包（Closure）
+- 三、装饰器（Decorator）
+- 四、生成器（Generator）和 yield
+- 五、上下文管理器（Context Manager）
+- 六、五个概念之间的关系
+
+### Day 3 — 标准库深度实战
+
+- 一、collections — 比内置容器更强大的工具
+- 二、itertools — 迭代器瑞士军刀
+- 三、functools — 函数工具箱
+- 四、错误处理模式
+- 五、logging — 专业日志
+- 六、正则表达式速查
+
+### Day 4 — 高级 OOP 与类型系统
+
+- 一、属性控制与内存优化
+- 二、接口与类型系统
+- 三、数据类与类型注解
+
+### Day 5 — 并发编程
+
+- 一、理解并发：为什么 Python 的并发不一样
+- 二、threading — 多线程
+- 三、multiprocessing — 多进程
+- 四、asyncio — 异步 I/O
+
+### Day 6 — 工程化工具链
+
+- 一、项目结构 — 从一开始就做对
+- 二、pytest — 专业测试框架
+- 三、CLI 工具 — Click / Typer
+- 四、FastAPI 入门
+- 五、SQLAlchemy — 数据库 ORM
+
+### Day 7 — 实战项目：URL Shortener
+
+- 一、项目规划
+- 二、数据库层 — SQLAlchemy
+- 三、数据校验层 — Pydantic
+- 四、工具函数层
+- 五、应用入口 — FastAPI
+- 六、CLI 管理工具 — Click
+- 七、pyproject.toml + __main__.py
+- 八、测试
+- 九、运行
+- 十、扩展方向
 
 ---
 
